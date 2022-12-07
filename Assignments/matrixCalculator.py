@@ -1,3 +1,12 @@
+'''
+Created by Eli Murphy
+
+Date: 6 December 2022
+
+
+'''
+import sympy
+
 class Matrix:
     def __init__(self, r, c, data):
         self.data = data                                                                               # Defines matrix data
@@ -45,6 +54,8 @@ class Matrix:
         newmat.data[row1],newmat.data[row2] = self.data[row2], self.data[row1]                         # Switches rows on new matrix
         newmat.printMatrix()
 
+
+
 def main():
     m2 = Matrix(3,3, [[1,2,3],[4,5,6],[7,8,9]])
     m1 = Matrix(3,3, [[1,2,3],[4,5,6],[7,8,9]])
@@ -73,6 +84,12 @@ def main():
     # for i in matrixinput:
     #     m1.append(i.split(","))
     # print(m1)
+    rref 
+
+def main2():
+    m1 = sympy.Matrix([[1,2,3],[4,5,6],[7,8,9]])
+
+    print(m1.rref())
 
 if __name__ == '__main__':
-    main()
+    main2()
