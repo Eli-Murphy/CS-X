@@ -5,8 +5,6 @@ Date: 6 December 2022
 
 
 '''
-import sympy
-
 class Matrix:
     def __init__(self, r, c, data):
         self.data = data                                                                               # Defines matrix data
@@ -24,7 +22,7 @@ class Matrix:
         for i in range(addmat.r):                                                                      
             for j in range(addmat.c):
                 newmat.data[i][j] = self.data[i][j] + addmat.data[i][j]                                # For each row and for each columb, the output is the same coordinate of both matricies added
-        newmat.printMatrix()
+        return newmat
         
     def timesMatrix(self, multmat):                                                                             
         if self.c != multmat.r:
@@ -36,7 +34,7 @@ class Matrix:
                 for k in range(self.c):                                                                # For the amount of columbs in the first 
                     x += self.data[i][k] * multmat.data[k][j]                                          # placeholder plus the value at the position on the first matrix times the value at the position to be added to it
                 newmat.data[i][j] = x                                                                  # Sets the new matrix position with the placeholder
-        newmat.printMatrix()
+        return newmat
 
     def scalarTimesRow(self, scalar, rownumber):
         if rownumber > self.r:                                                                         # Checks that the row to be multiplied exists
@@ -44,7 +42,7 @@ class Matrix:
         newmat = Matrix(self.r,self.c, self.data)
         for i in range(len(self.data[rownumber])):
             newmat.data[rownumber][i] = newmat.data[rownumber][i] * scalar
-        newmat.printMatrix()
+        return newmat
 
     def switchRows(self, row1, row2):                                                                  
         if row1 > self.r or row2 > self.r:                                                             # Checks to see if rows selected exist
@@ -52,9 +50,33 @@ class Matrix:
         row1d, row2d = self.data[row1], self.data[row2]                                                # Holds row data
         newmat = Matrix(self.r, self.c, self.data)                                                     # Copies self matrix to new matrix
         newmat.data[row1],newmat.data[row2] = self.data[row2], self.data[row1]                         # Switches rows on new matrix
-        newmat.printMatrix()
+        return newmat
 
+    def linearCombRows(self, scalar, row1, row2):
+        return (self.scalarTimesRow(scalar, row1)).scalarTimesRow(scalar, row2)
+    
+    def invert_matrix(self):
 
+        det = 0
+        for j in range(len(self.data)):
+            sign = (-1) ** (1 + j)
+            submatrix = [self.data[i][:j] + self.data[i][j+1:] for i in range(1, len(self.data))]
+            det += sign * self.data[0][j] * Matrix(len(submatrix), len(submatrix[0]), submatrix).invert_matrix()
+
+        # If the determinant is zero, the matrix is not invertible
+        if det == 0:
+            return None
+
+        # Calculate the inverse of the matrix by taking the adjoint of the matrix
+        # and dividing it by the determinant
+        inverse = [[0 for j in range(len(self.data))] for i in range(len(self.data))]
+        for i in range(len(self.data)):
+            for j in range(len(self.data)):
+                sign = (-1) ** (i + j)
+                submatrix = [self.data[k][:j] + self.data[k][j+1:] for k in range(len(self.data)) if k != i]
+                inverse[i][j] = sign * Matrix(len(submatrix), len(submatrix[0]), submatrix).invert_matrix() / det 
+        print(inverse)
+        return inverse
 
 def main():
     m2 = Matrix(3,3, [[1,2,3],[4,5,6],[7,8,9]])
@@ -64,13 +86,23 @@ def main():
         if menuOpt == "printM":
             m1.printMatrix()
         elif menuOpt == "plusM":
-            m1.plusMatrix(m2)
+            out = m1.plusMatrix(m2)
+            out.printMatrix()
         elif menuOpt == "timesM":
-            m1.timesMatrix(m2)
+            put = m1.timesMatrix(m2)
+            out.printMatrix()
         elif menuOpt == "STR":
-            m1.scalarTimesRow(scalar= int(input("Scalar: ")), rownumber=(int(input("Row: "))-1))
+            out = m1.scalarTimesRow(scalar= int(input("Scalar: ")), rownumber=(int(input("Row: "))-1))
+            out.printMatrix()
         elif menuOpt == "sR":
-            m1.switchRows(row1=(int(input("Row 1: "))-1), row2=(int(input("Row 1: "))-1))
+            out = m1.switchRows(row1=(int(input("Row 1: "))-1), row2=(int(input("Row 1: "))-1))
+            out.printMatrix()
+        elif menuOpt == "lCR":
+            out = m1.linearCombRows(2, row1=(int(input("Row 1: "))-1), row2=(int(input("Row 1: "))-1))
+            out.printMatrix()
+        elif menuOpt == "inv":
+            out = m1.invert_matrix()
+            out.printMatrix()
     #m1.timesMatrix(m2)
     #m1.scalarTimesRow(2,2)
     #m1.switchRows(1,2)
@@ -84,12 +116,8 @@ def main():
     # for i in matrixinput:
     #     m1.append(i.split(","))
     # print(m1)
-    rref 
 
-def main2():
-    m1 = sympy.Matrix([[1,2,3],[4,5,6],[7,8,9]])
 
-    print(m1.rref())
 
 if __name__ == '__main__':
-    main2()
+    main()
