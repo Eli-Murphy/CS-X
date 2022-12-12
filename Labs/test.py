@@ -27,6 +27,5 @@ def like_a_gauss(mat):
 	print(mat)
 
 
-mat = [[3,3,1],[6,3,8],[4,2,9]]
-
+mat = [[1,2,3,4],[4,5,6,7],[7,8,9,10]]
 like_a_gauss(mat)
