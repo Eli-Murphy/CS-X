@@ -2,11 +2,7 @@
 Created by Eli Murphy
 
 Date: 6 December 2022
-
-
 '''
-from cv2 import determinant
-
 
 class Matrix:
     def __init__(self, data):
@@ -33,7 +29,7 @@ class Matrix:
         :param list addmat: The matrix to be added
         '''
         if addmat.r != self.r or addmat.c != self.c:                                                   # Checks to make sure matrix dimensions match, otherwise cannot be added 
-            return ArithmeticError("Matrix cannot be added to selected matrix.")                       # Raises error
+            return "Matrix cannot be added to selected matrix."                                        # Returns error
         newmat = Matrix([[0 for x in range(addmat.c)] for y in range(addmat.r)])                       # Generates new matrix class for output
         for i in range(addmat.r):                                                                      
             for j in range(addmat.c):
@@ -47,7 +43,7 @@ class Matrix:
         :param list multmat: The multiplier matrix
         '''                                                                         
         if self.c != multmat.r:
-            return ArithmeticError("Matrix cannot be multiplied to selected matrix.")
+            return "Matrix cannot be multiplied to selected matrix."
         newmat = Matrix([[0 for x in range(multmat.c)] for y in range(self.r)])                        # Creates a zero array with the amount of rows as the first matrix and the amount of columbs as the second
         for i in range(self.r):                                                                        # For the amount of rows in the first
             for j in range(multmat.c):                                                                 # For the amount of columbs in the second
@@ -98,116 +94,161 @@ class Matrix:
         '''
         This function finds the row echelon form of a given matrix
         '''
-        matrix = self.data
-        for x in range(min(len(matrix), len(matrix[0]))):                                              # iterates through the rows of the matrix
-            for row in range(x, len(matrix)):                                                          # iterates through the columns of the matrix
-                if matrix[row][x] == 0:                                                                # checks if the current element is 0. 
+        #matrix = self.data
+        for x in range(min(self.r, self.c)):                                                           # iterates through the rows of the matrix
+            for row in range(x, self.r):                                                               # iterates through the columns of the matrix
+                if self.data[row][x] == 0:                                                             # checks if the current element is 0. 
                     continue                                                                           # If it is, the function continues to the next iteration of the loop.
                 
-                matrix[x], matrix[row] = matrix[row], matrix[x]                                        # swaps the current row with the row that has the first non-zero element in the current column
+                self.data[x], self.data[row] = self.data[row], self.data[x]                            # swaps the current row with the row that has the first non-zero element in the current column
                 
-                varRowCol = matrix[x][x]
+                varRowCol = self.data[x][x]
                 
-                for row2 in range(x+1, len(matrix)):                                                   # iterates through the rows of the matrix
-                    selectrow = matrix[row2][x]           
+                for row2 in range(x+1, self.r):                                                        # iterates through the rows of the matrix
+                    selectrow = self.data[row2][x]           
                     multiplier = -1 * selectrow / varRowCol                                            # calculates a multiplier for the current row 
-                    for col2 in range(x, len(matrix[0])):                                              # iterates through the columns of the matrix
-                        matrix[row2][col2] += matrix[x][col2] * multiplier                             # adds the current row multiplied by the multiplier to the current row.
+                    for col2 in range(x, self.c):                                                      # iterates through the columns of the matrix
+                        self.data[row2][col2] += self.data[x][col2] * multiplier                       # adds the current row multiplied by the multiplier to the current row.
                 break
 
-        for i in range(len(matrix)):
-            for j in range(len(matrix[0])): 
-                matrix[i][j] = round(matrix[i][j],3)                                                   # rounds the current element to 3 decimal places
+        for i in range(self.r):
+            for j in range(self.c): 
+                self.data[i][j] = round(self.data[i][j],3)                                             # rounds the current element to 3 decimal places
 
-        output = Matrix(matrix)
+        output = Matrix(self.data)
         return output
 
     def inverse(self):
-        if self.r != self.c:
+        '''
+        Finds the inverse of a given matrix
+        '''
+        if self.r != self.c:                                                                           # Ensures the matrix is square, otherwise the inverse would be impossible
             return "Error: matrix is not square"
 
-        determinant = self.determinant()
-        # ... (code to calculate determinant)
-
-        print(determinant)
+        determinant = self.determinant()                                                               # Calls a function to find the matrix's determinant
 
         if determinant == 0:
-            return "Error: matrix does not have an inverse"
+            return "Error: matrix does not have an inverse"                                            # Any matrix with a determinant of zero does not have an inverse
 
-        adjoint = []
-        # ... (code to calculate adjoint)
+        adjugate = self.adjugate()                                                                     # Calls a function to find the adjugate matrix 
+        
 
         inverse = []
-        for row in adjoint:
+        for r in adjugate:                                                                             # for each row in the adjugate matrix
             inverse_row = []
-            for element in row:
-                inverse_row.append(element / determinant)
-            inverse.append(inverse_row)
+            for e in r:                                                                                # for each element in the row
+                inverse_row.append(e / determinant)                                                    # adds the element divided by the determinant to the row
+            inverse.append(inverse_row)                                                                # adds the inverted row to the inverse matrix
 
-        return inverse
+
+        for i in range(len(inverse)):
+            for j in range(len(inverse[0])): 
+                inverse[i][j] = round(inverse[i][j],3)                                                 # Rounds each element to the inverse to the thousanths place
+
+        return Matrix(inverse)
+
     def determinant(self):
-        # Check if the matrix is square
-        
-        # Check if the matrix has a size of 1x1
-        if self.r == 1:
+        '''
+        Finds the determinant of a given matrix
+        '''        
+        if self.r == 1:                                                                                # the determiant of a 1x1 matrix is the only element
             return self.data[0][0]
 
-        # Check if the matrix has a size of 2x2
-        if self.r == 2:
+        if self.r == 2:                                                                                # the determinant of a 2x2 matrix is the difference between the product of the diagonals
             return self.data[0][0] * self.data[1][1] - self.data[0][1] * self.data[1][0]
 
-        # For matrices larger than 2x2, we use Laplace expansion
-        det = 0
-        for i in range(self.r):
-            # Create a submatrix by removing the ith row and column
-            submatrix = [[self.data[j][k] for k in range(self.r) if k != i] for j in range(1, self.r)]
-            # Use the Laplace expansion formula to compute the determinant
-            det += (-1) ** i * self.data[0][i] * Matrix(submatrix).determinant()
+        det = 0                                                                                        
+        for i in range(self.r):                                                                        # Iterates through each row
+            submatrix = [[self.data[j][k] for k in range(self.r) if k != i] for j in range(1, self.r)] # Create a submatrix by removing the ith row and column
+            det += (-1) ** i * self.data[0][i] * Matrix(submatrix).determinant()                       # Use the Laplace expansion formula to compute the determinant
 
         return det
 
+    def adjugate(self):
+        '''
+        Finds the adjugate of a matrix 
+        '''
+        cofactors = []                                                                                 # First thing to do is to find the cofactors
+        for i in range(self.r):                                                                        # Iterates through the rows of a matrix
+            cofactor_row = []  
+            for j in range(self.c):                                                                    # Iterates through the colomns of a matrix
+                minor = [row[:j] + row[j+1:] for row in (self.data[:i]+self.data[i+1:])]               # calculate the minor matrix for the element at row i and column j
+                minor_det = Matrix(minor).determinant()                                                # calls  the determinant function to find the determinat of the minor matrix
+                cofactor = (-1)**(i+j) * minor_det                                                     # calculate the cofactor for the element at row i and column j
+                cofactor_row.append(cofactor)
+            cofactors.append(cofactor_row)
+        
+        adj = [[cofactors[j][i] for j in range(len(cofactors))] for i in range(len(cofactors[0]))]     # Calculate the adjugate by taking the transpose of the cofactor matrix
 
+        return adj
 
-def main():
-    m2 = Matrix([[1,2,3,4],[4,5,6,7],[7,8,9,10]])
-    m1 = Matrix([[1,2,3],[4,5,6],[7,8,9]])
+def userMain():
+    matrix1 = [[1,2,3,4],[4,5,6,7],[7,8,9,10]]
+    matrix2 = [[1,2,0],[-1,1,1],[1,2,3]]
+    
+    print("""Here are the options:
+1) Print Matrix
+2) Add Matrix to another Matrix
+3) Multiply Matrix by a Matrix
+4) Multiply Specific Matrix Row by A Number
+5) Switch Two Rows on a Matrix
+6) Multiply Two Specific Matrix Rows by A Number
+7) Row Echelon Form of a Matrix
+8) Inverse of a Matrix
+    """)
     while True:
-        menuOpt = input("Start Code: ")
-        if menuOpt == "printM":
-            m1.printMatrix()
-        elif menuOpt == "plusM":
-            out = m1.plusMatrix(m2)
-            if str(type(out)) == "<class 'ArithmeticError'>":
-                print(out)
-            else:
-                out.printMatrix()
-        elif menuOpt == "timesM":
-            out = m1.timesMatrix(m2)
-            if str(type(out)) == "<class 'ArithmeticError'>":
-                print(out)
-            else:
-                out.printMatrix()
-        elif menuOpt == "STR":
-            out = m1.scalarTimesRow(scalar= float(input("Scalar: ")), rownumber=(int(input("Row: "))-1))
-            out.printMatrix()
-        elif menuOpt == "sR":
-            out = m1.switchRows(row1=(int(input("Row 1: "))-1), row2=(int(input("Row 1: "))-1))
-            if str(type(out)) == "<class 'ArithmeticError'>":
-                print(out)
-            else:
-                out.printMatrix()
-        elif menuOpt == "lCR":
-            out = m1.linearCombRows(2, row1=(int(input("Row 1: "))-1), row2=(int(input("Row 1: "))-1))
-            out.printMatrix()
-        elif menuOpt == "ref":
-            out = m2.ref()
-            out.printMatrix()
-        elif menuOpt == "inv":
-            out = m1.inverse()
+        opt = input("\nMenu Option (1-8): ")
+        md = input("Which matrix would you like to work on? (1 or 2): ")
+        print("\n")
+        if md == "1": 
+            mpri = Matrix(matrix1)
+            msec = Matrix(matrix2)
+        elif md == "2":
+            mpri = Matrix(matrix2)
+            msec = Matrix(matrix1)
+        if opt == "1": #print
+            mpri.printMatrix()
+        elif opt == "2": #plus
+            out = mpri.plusMatrix(msec)
             if type(out) == str:
                 print(out)
             else:
                 out.printMatrix()
+        elif opt == "3": #multiply
+            out = mpri.timesMatrix(msec)
+            if type(out) == str:
+                print(out)
+            else:
+                out.printMatrix()
+        elif opt == "4": #RowScalar
+            out = mpri.scalarTimesRow(scalar= float(input("Scalar: ")), rownumber=(int(input("Row: "))-1))
+            out.printMatrix()
+        elif opt == "5": #switchrow
+            out = mpri.switchRows(row1=(int(input("Row 1: "))-1), row2=(int(input("Row 2: "))-1))
+            if type(out) == str:
+                print(out)
+            else:
+                out.printMatrix()
+        elif opt == "6": #2rowscalar
+            out = mpri.linearCombRows(scalar= float(input("Scalar: ")), row1=(int(input("Row 1: "))-1), row2=(int(input("Row 2: "))-1))
+            out.printMatrix()
+        elif opt == "7": #ref
+            out = mpri.ref()
+            out.printMatrix()
+        elif opt == "8": #inverse
+            out = mpri.inverse()
+            if type(out) == str:
+                print(out)
+            else:
+                out.printMatrix()
+        
 
 if __name__ == '__main__':
-    main()
+    print("Eli Murphy Matrix Calculator\n\n")
+    userMain()
+
+
+# Copyright (c) 2022 Elijah A. Murphy
+# Distributed under the terms of the MIT License. 
+# SPDX-License-Identifier: MIT
+# This code is part of the Battleship project (https://github.com/Eli-Murphy/CS-X)
