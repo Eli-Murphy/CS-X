@@ -184,7 +184,7 @@ class Matrix:
 
 def userMain():
     matrix1 = [[1,2,3,4],[4,5,6,7],[7,8,9,10]]
-    matrix2 = [[1,2,0],[-1,1,1],[1,2,3]]
+    matrix2 = [[4,11,2,8],[-1,2,3,4],[5,9,10,12],[8,13,14,7]]
     
     print("""Here are the options:
 1) Print Matrix
