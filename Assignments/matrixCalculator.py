@@ -134,7 +134,7 @@ class Matrix:
         
 
         inverse = []
-        for r in adjugate:                                                                             # for each row in the adjugate matrix
+        for r in range(self.r):                                                                             # for each row in the adjugate matrix
             inverse_row = []
             for e in r:                                                                                # for each element in the row
                 inverse_row.append(e / determinant)                                                    # adds the element divided by the determinant to the row
