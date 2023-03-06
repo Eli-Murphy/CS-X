@@ -160,7 +160,7 @@ class Matrix:
         det = 0                                                                                        
         for i in range(self.r):                                                                        # Iterates through each row
             submatrix = [[self.data[j][k] for k in range(self.r) if k != i] for j in range(1, self.r)] # Create a submatrix by removing the ith row and column
-            det += (-1) ** i * self.data[0][i] * Matrix(submatrix).determinant()                       # Use the Laplace expansion formula to compute the determinant
+            det += (-1) ** i * self.data[0][i] *   ).determinant()                       # Use the Laplace expansion formula to compute the determinant
 
         return det
 
@@ -182,7 +182,7 @@ class Matrix:
 
         return adj
 
-def userMain():
+def main():
     matrix1 = [[1,2,3,4],[4,5,6,7],[7,8,9,10]]
     matrix2 = [[4,11,2,8],[-1,2,3,4],[5,9,10,12],[8,13,14,7]]
     
@@ -245,7 +245,7 @@ def userMain():
 
 if __name__ == '__main__':
     print("Eli Murphy Matrix Calculator\n\n")
-    userMain()
+    main()
 
 
 # Copyright (c) 2022 Elijah A. Murphy
