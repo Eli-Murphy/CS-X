@@ -3,12 +3,11 @@ dataset = []
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 
-#def main(time, G, hostMass, initialX, ViX, ):
-    #makechart()
 
 def generateChart(dataset, gentype):
     xval = []
     yval = []
+    sun = False
 
     if gentype == "XposYpos":
         for i in dataset:
@@ -17,8 +16,10 @@ def generateChart(dataset, gentype):
             ti = "X postition Vs. Y Position"
             xl = "X Postion"
             yl = "Y position"
+        
 
-    if gentype == "XposTime":
+    elif gentype == "XposTime":
+
         for i in dataset:
             xval.append(i[0])
             yval.append(i[3])
@@ -26,7 +27,8 @@ def generateChart(dataset, gentype):
             xl = "Time"
             yl = "X position"
 
-    if gentype == "YposTime":
+
+    elif gentype == "YposTime":
         for i in dataset:
             xval.append(i[0])
             yval.append(i[6])
@@ -34,14 +36,52 @@ def generateChart(dataset, gentype):
             xl = "Time"
             yl = "Y position"
 
-    # fig, ax = plt.subplot() 
-    # ax.set_xlim(min(xval), max(xval))
-    # ax.set_ylim(min(yval), max(yval))
-    # plt.plot(x,y) 
-    # plt.show()
+    
+    elif gentype == "XVelTime":
+        for i in dataset:
+            xval.append(i[0])
+            yval.append(i[1])
+            ti = "X Velocity Vs. Time"
+            xl = "Time"
+            yl = "X Velocity"
 
- 
+    
+    elif gentype == "YVelTime":
+        for i in dataset:
+            xval.append(i[0])
+            yval.append(i[4])
+            ti = "Y Velocity Vs. Time"
+            xl = "Time"
+            yl = "Y Velocity"
 
+
+    elif gentype == "XaTime":
+        for i in dataset:
+            xval.append(i[0])
+            yval.append(i[2])
+            ti = "X Accelaration Vs. Time"
+            xl = "Time"
+            yl = "X Accelaration"
+
+
+    elif gentype == "YaTime":
+        for i in dataset:
+            xval.append(i[0])
+            yval.append(i[5])
+            ti = "Y Accelaration Vs. Time"
+            xl = "Time"
+            yl = "Y Accelaration"
+    if gentype == "XPosYPos":
+        xmax = 1e7
+        xmin = -1e7
+        ymax = 1e7  
+        ymin = -1e7
+        sun = True
+    else:
+        xmax = max(xval)*1.5
+        xmin = min(xval)*1.5
+        ymax = max(yval)*1.5   
+        ymin = min(yval)*1.5
  
     def data():
         for i in range(len(xval)):
@@ -49,11 +89,11 @@ def generateChart(dataset, gentype):
 
 
     def init():
-        ax.set_ylim(min(yval)*1.5, max(yval)*1.5)
-        ax.set_xlim(min(xval)*1.5, max(xval)*1.5)
+        ax.set_ylim(ymin, ymax)
+        ax.set_xlim(xmin, xmax)
 
-        ax.set_ylim(-5e7, 5e7)
-        ax.set_xlim(-5e7, 5e7)
+        if sun:
+            ax.plot(0,0, "ro")
         plt.grid(visible=True, which='major', axis='both')
         plt.title(ti)
         plt.xlabel(xl)
@@ -64,7 +104,7 @@ def generateChart(dataset, gentype):
         return line
 
     fig, ax = plt.subplots()
-    line, = ax.plot([], [], lw=2)
+    line, = ax.plot([], [], lw=.5)
     
     ax.grid()
     xdata, ydata = [], []
@@ -94,7 +134,7 @@ def generateChart(dataset, gentype):
 
 
 
-def singlepoint():
+def singlepointOrbit():
 
     fig, ax = plt.subplots()
 
@@ -104,7 +144,7 @@ def singlepoint():
     for i in dataset:
         xval.append(i[3])
         yval.append(i[6])
-        ti = "X postition Vs. Y Position"
+        ti = "Animated Orbit Path"
         xl = "X Postion"
         yl = "Y position"
 
@@ -116,6 +156,9 @@ def singlepoint():
         ax.set_ylim(-1e7, 1e7)
         ax.set_xlim(-1e7, 1e7)
         plt.grid(visible=True, which='major', axis='both')
+        plt.title("Visualization of orbital Path")
+        plt.xlabel(xl)
+        plt.ylabel(yl)
         ax.plot(0,0, "ro")
         ax.plot(xval[i], yval[i], color='green', 
                 label='original', marker='.', markersize=2)
@@ -151,22 +194,24 @@ def makeData(time, G, hostMass, initialX, initialY, ViX, ViY, iterC ):
     #for j in range(len(dataset)):
         #print(dataset[j])
     
-    singlepoint()
+    singlepointOrbit()
 
-    generateChart(dataset, gentype="XposYpos")
+    generateChart(dataset, gentype="YaTime")
+    '''
+    For X position vs Y position, use "XposYpos"
+    For X position vs Time, use "XposTime"
+    For Y position vs Time, use "YposTime"
+    For X velocity  vs Time, use "XVelTime"
+    For Y velocity  vs Time, use "YVelTime"
+    For X Accelaration Vs Time, use "XaTime"
+    For Y Accelaration Vs Time, use "YaTime"
+    '''
+
 
 
 if __name__ == '__main__':
-    # time = float(input("Delta time: "))
-    # G = float(input("Gravity Constant (Sci Not): "))
-    # hostMass = float(input("Mass of Host (Sci Not): "))
-    # initialX = float(input("Initial X Pos (Sci Not): "))
-    # initialY = float(input("Initial Y Pos (Sci Not): "))
-    # ViX = float(input("Initial X Velocity (Sci Not): "))
-    # ViY = float(input("Initial Y Velocity (Sci Not): "))
-    # iterC = int(input("How many iterations? (int): "))
 
-    time = 38
+    time = 10
     G = 6.67e-11
     hostMass = 6.00e24
     initialX = 4.00e06
@@ -178,5 +223,4 @@ if __name__ == '__main__':
 
     iterC = 2000
 
-    makeData(time, G, hostMass, initialX, initialY, ViX, ViY, iterC )
-    #main()
+    makeData(time, G, hostMass, initialX, initialY, ViX, ViY, iterC)
