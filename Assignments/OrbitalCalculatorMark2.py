@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+__author__ = "Elijah Murphy"
+__copyright__ = "Copyright 2023, CS-X Classwork"
+__license__ = "MIT"
+__version__ = "2.0.3"
+__maintainer__ = "Elijah Murphy"
+__email__ = "emurphy24@gcds.net"
+__status__ = "Complete, in optimization"
+
 from itertools import count
 
 import matplotlib.animation as animation
@@ -44,7 +53,7 @@ def generateCharts(dataset):
     ax[0,1].plot(0,0, "yo")                                 #Plots the "sun" or orbiter
     ax[0,1].grid(visible=True, which='major', axis='both')  #Creates gridlines
     ax[0,1].title.set_text("X Position Vs. Y Positon")      #Creates graph title
-    ax[0,1].set_xlabel("Time (s?)")                         #Creates X axis label
+    ax[0,1].set_xlabel("X Position (m)")                    #Creates X axis label
     ax[0,1].set_ylabel("Y Position (m)")                    #Creates Y axis label
 
     line2, = ax[1,0].plot(time, xpos, lw=.5) 
@@ -108,6 +117,7 @@ def generateCharts(dataset):
     yac_animation = []
 
     def animate(i):
+            #Adds new data to the animation lists
             time_animation.append(time[next(index)])
             xpos_animation.append(xpos[next(index)])
             ypos_animation.append(ypos[next(index)])
@@ -115,7 +125,8 @@ def generateCharts(dataset):
             yvel_animation.append(yvel[next(index)])
             xac_animation.append(xac[next(index)])
             yac_animation.append(yac[next(index)])
-
+            
+            #Sets the new position for the animation
             planet.set_data(xpos_animation[-1], ypos_animation[-1])
             line1.set_data(xpos_animation, ypos_animation)
             line2.set_data(time_animation, xpos_animation)
@@ -127,8 +138,10 @@ def generateCharts(dataset):
 
             return [planet, line1, line2, line3, line4, line5, line6, line7]
 
-    ani = animation.FuncAnimation(fig, animate, interval=3, save_count=iterC-1, frames=60)
+    #Creates animation
+    ani = animation.FuncAnimation(fig, animate, interval=3, save_count=iterC, frames=60)
 
+    #Writer settings for graph
     writergif = animation.PillowWriter(fps = 60)
 
     fig.tight_layout()
@@ -182,3 +195,10 @@ if __name__ == '__main__':
     iterC = 2000
 
     makeData(time, G, hostMass, initialX, initialY, ViX, ViY, iterC)
+
+
+
+# Copyright (c) 2023 Elijah A. Murphy
+# Distributed under the terms of the MIT License. 
+# SPDX-License-Identifier: MIT
+# This code is part of my CS-X Classwork (https://github.com/Eli-Murphy/CS-X)  
