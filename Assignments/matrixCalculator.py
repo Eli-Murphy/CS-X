@@ -248,7 +248,7 @@ if __name__ == '__main__':
     main()
 
 
-# Copyright (c) 2022 Elijah A. Murphy
+# Copyright (c) 2023 Elijah A. Murphy
 # Distributed under the terms of the MIT License. 
 # SPDX-License-Identifier: MIT
-# This code is part of the Battleship project (https://github.com/Eli-Murphy/CS-X)  
+# This code is part of my CS-X Classwork (https://github.com/Eli-Murphy/CS-X)  
